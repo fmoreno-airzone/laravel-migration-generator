@@ -8,6 +8,7 @@ return [
     'view_naming_scheme'  => env('LMG_VIEW_NAMING_SCHEME', '[IndexedTimestamp]_create_[ViewName]_view.php'),
     'path'                => env('LMG_OUTPUT_PATH', 'tests/database/migrations'),
     'skippable_tables'    => env('LMG_SKIPPABLE_TABLES', 'migrations'),
+    'skip_tables_like'    => env('LMG_SKIP_TABLES_LIKE', 'migrations'),
     'skip_views'          => env('LMG_SKIP_VIEWS', false),
     'skippable_views'     => env('LMG_SKIPPABLE_VIEWS', ''),
     'sort_mode'           => env('LMG_SORT_MODE', 'foreign_key'),

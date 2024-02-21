@@ -19,6 +19,8 @@ class MySQLGeneratorManager extends BaseGeneratorManager implements GeneratorMan
     public function init()
     {
         $tables = DB::select('SHOW FULL TABLES');
+        
+        dd($tables);
 
         foreach ($tables as $rowNumber => $table) {
             $tableData = (array) $table;
