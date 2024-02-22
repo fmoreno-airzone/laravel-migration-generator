@@ -7,10 +7,12 @@ use LaravelMigrationGenerator\Definitions\ViewDefinition;
 use LaravelMigrationGenerator\Helpers\DependencyResolver;
 use LaravelMigrationGenerator\Definitions\TableDefinition;
 use LaravelMigrationGenerator\GeneratorManagers\Interfaces\GeneratorManagerInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 abstract class BaseGeneratorManager implements GeneratorManagerInterface
 {
     protected array $tableDefinitions = [];
+    protected string $schema = '';
 
     protected array $viewDefinitions = [];
 
@@ -111,9 +113,20 @@ abstract class BaseGeneratorManager implements GeneratorManagerInterface
      */
     public function writeTableMigrations(array $tableDefinitions, $basePath)
     {
+        $console = new ConsoleOutput();
+        $console->writeln("Generating migrations...");
+
         foreach ($tableDefinitions as $key => $tableDefinition) {
-            $tableDefinition->formatter()->write($basePath, $key);
+            $formatter = $tableDefinition->formatter();
+
+            if ($formatter->fileExists($basePath, $key)) {
+                continue;
+            }
+
+            $finalFile = $tableDefinition->formatter()->write($basePath, $key);
+            $console->writeln("Created $finalFile");
         }
+        $console->writeln("<info>Done. </info>");
     }
 
     /**
@@ -156,5 +169,10 @@ abstract class BaseGeneratorManager implements GeneratorManagerInterface
         }
 
         return in_array($view, $this->skippableViews());
+    }
+
+    public function setSchema(string $schema): void
+    {
+        $this->schema = $schema;
     }
 }

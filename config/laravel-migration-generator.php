@@ -7,8 +7,7 @@ return [
     'table_naming_scheme' => env('LMG_TABLE_NAMING_SCHEME', '[IndexedTimestamp]_create_[TableName]_table.php'),
     'view_naming_scheme'  => env('LMG_VIEW_NAMING_SCHEME', '[IndexedTimestamp]_create_[ViewName]_view.php'),
     'path'                => env('LMG_OUTPUT_PATH', 'tests/database/migrations'),
-    'skippable_tables'    => env('LMG_SKIPPABLE_TABLES', 'migrations'),
-    'skip_tables_like'    => env('LMG_SKIP_TABLES_LIKE', 'migrations'),
+    'tables_to_generate'  => env('LMG_TABLES_TO_GEN', []),
     'skip_views'          => env('LMG_SKIP_VIEWS', false),
     'skippable_views'     => env('LMG_SKIPPABLE_VIEWS', ''),
     'sort_mode'           => env('LMG_SORT_MODE', 'foreign_key'),
@@ -20,6 +19,11 @@ return [
         'use_defined_primary_key_index_names' => env('LMG_USE_DEFINED_PRIMARY_KEY_INDEX_NAMES', true),
         'with_comments'                       => env('LMG_WITH_COMMENTS', true),
         'use_defined_datatype_on_timestamp'   => env('LMG_USE_DEFINED_DATATYPE_ON_TIMESTAMP', false),
+    ],
+    'table_selector' => [
+        'skip_like' => [
+            'migrations',
+        ]
     ],
 
     //now driver specific configs

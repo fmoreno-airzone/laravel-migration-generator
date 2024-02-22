@@ -9,10 +9,15 @@ use Illuminate\Support\Facades\Config;
 use LaravelMigrationGenerator\Helpers\ConfigResolver;
 use LaravelMigrationGenerator\GeneratorManagers\MySQLGeneratorManager;
 use LaravelMigrationGenerator\GeneratorManagers\Interfaces\GeneratorManagerInterface;
+use LaravelMigrationGenerator\GeneratorManagers\BaseGeneratorManager;
 
 class GenerateMigrationsCommand extends Command
 {
-    protected $signature = 'generate:migrations {--path=default : The path where migrations will be output to} {--table=* : Only generate output for specified tables} {--view=* : Only generate output for specified views} {--connection=default : Use a different database connection specified in database config} {--empty-path : Clear other files in path, eg if wanting to replace all migrations}';
+    protected $signature = 'generate:migrations 
+    {--schema=testing : The schema that migrations will be taken from} 
+    {--empty-path : Clear other files in path, eg if wanting to replace all migrations}
+    {--path=default : The path where migrations will be output to}
+    {--connection=mysql : The connection that migrations will be taken from}';
 
     protected $description = 'Generate migrations from an existing database';
 
@@ -41,6 +46,11 @@ class GenerateMigrationsCommand extends Command
         return $basePath;
     }
 
+    public function getSchema()
+    {
+        return $this->option('schema');
+    }
+
     public function handle()
     {
         try {
@@ -54,6 +64,7 @@ class GenerateMigrationsCommand extends Command
         $this->info('Using connection ' . $connection);
         DB::setDefaultConnection($connection);
 
+        $driver = Config::get('database.connections.' . $connection)['driver'];
         $driver = Config::get('database.connections.' . $connection)['driver'];
 
         $manager = $this->resolveGeneratorManager($driver);
@@ -73,11 +84,7 @@ class GenerateMigrationsCommand extends Command
 
         $this->info('Using ' . $basePath . ' as the output path..');
 
-        $tableNames = Arr::wrap($this->option('table'));
-
-        $viewNames = Arr::wrap($this->option('view'));
-
-        $manager->handle($basePath, $tableNames, $viewNames);
+        $manager->handle($basePath);
     }
 
     /**
@@ -94,6 +101,10 @@ class GenerateMigrationsCommand extends Command
             return false;
         }
 
-        return new $supported[$driver]();
+        /** @var BaseGeneratorManager $manager */
+        $manager = new $supported[$driver]();
+        $manager->setSchema($this->getSchema());
+
+        return $manager;
     }
 }

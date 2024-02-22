@@ -48,6 +48,24 @@ class TableFormatter
         return $baseStubFileName;
     }
 
+    public function getStubFileNameWithoutDate($index = 0): string
+    {
+        $driver = $this->tableDefinition->getDriver();
+        $baseStubFileName = ConfigResolver::tableNamingScheme($driver);
+        foreach ($this->stubNameVariables($index) as $variable => $replacement) {
+            if ($variable === "IndexedTimestamp") {
+                $baseStubFileName = preg_replace("/\[" . $variable . "\]/i", "", $baseStubFileName);
+                continue;
+            }
+
+            if (preg_match("/\[" . $variable . "\]/i", $baseStubFileName) === 1) {
+                $baseStubFileName = preg_replace("/\[" . $variable . "\]/i", $replacement, $baseStubFileName);
+            }
+        }
+
+        return $baseStubFileName;
+    }
+
     public function getStubPath(): string
     {
         $driver = $this->tableDefinition->getDriver();
@@ -185,8 +203,17 @@ class TableFormatter
         $stub = $this->render($tabCharacter);
 
         $fileName = $this->getStubFileName($index);
+
         file_put_contents($final = $basePath . '/' . $fileName, $stub);
 
         return $final;
+    }
+
+    public function fileExists(string $basePath, $index = 0, string $tabCharacter = '    '): bool
+    {
+        $fileNameWithoutDate = $this->getStubFileNameWithoutDate($index);
+        $fileList = glob("$basePath/*_*_*_*$fileNameWithoutDate");
+        
+        return !empty($fileList);
     }
 }
