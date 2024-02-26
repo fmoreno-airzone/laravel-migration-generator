@@ -1,5 +1,5 @@
 {
-    "name": "bennett-treptow/laravel-migration-generator",
+    "name": "fmoreno-airzone/laravel-migration-generator",
     "description": "Generate migrations from existing database structures",
     "minimum-stability": "stable",
     "license": "MIT",
